@@ -17,6 +17,7 @@ public:
 private slots:
     void contentContextMenuRequested(const QPoint& pos);
     void saveActionTriggered();
+    void openActionTriggered();
 
 private:
     void createUi();

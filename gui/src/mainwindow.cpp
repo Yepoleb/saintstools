@@ -58,6 +58,9 @@ void MainWindow::createUi()
     file_menu->addAction(action_open);
     file_menu->addAction(action_exit);
     setStatusBar(statusbar);
+
+    connect(action_open, SIGNAL(triggered()), this, SLOT(openActionTriggered()));
+    connect(action_exit, SIGNAL(triggered()), this, SLOT(close()));
 }
 
 void MainWindow::loadFile(const QString& filepath)
@@ -125,4 +128,11 @@ void MainWindow::saveActionTriggered()
         file.write(entry.getData());
         file.close();
     }
+}
+
+void MainWindow::openActionTriggered()
+{
+    QString filename(QFileDialog::getOpenFileName(
+        this, "Open File", QString(), "Packfiles (*.vpp_pc *.str2_pc)"));
+    loadFile(filename);
 }
