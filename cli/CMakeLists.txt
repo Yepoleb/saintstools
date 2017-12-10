@@ -8,7 +8,8 @@ set (SOURCES
     src/main.cpp
     src/common.cpp
     src/cmd_extract.cpp
-    src/cmd_list.cpp)
+    src/cmd_list.cpp
+    src/cmd_info.cpp)
 
 add_executable(saintspack ${SOURCES})
 target_link_libraries(saintspack Qt5::Core)

@@ -1,5 +1,6 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QStringList>
+#include <QtCore/QString>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
 
@@ -9,12 +10,12 @@
 
 
 
-int cmd_list(QStringList args)
+int cmd_info(QStringList args)
 {
     QCommandLineParser parser;
-    parser.setApplicationDescription("Lists packfiles contents");
+    parser.setApplicationDescription("Shows packfile details");
     parser.addHelpOption();
-    parser.addPositionalArgument("l", "This command", "l");
+    parser.addPositionalArgument("i", "This command", "i");
     parser.addPositionalArgument("file", "The file to open", "<file>");
     parser.process(args);
 
@@ -28,7 +29,8 @@ int cmd_list(QStringList args)
         return 1;
     }
 
-    QFile infile(parser.positionalArguments().value(1));
+    QString filename(parser.positionalArguments().value(1));
+    QFile infile(filename);
     if (!infile.open(QIODevice::ReadOnly)) {
         qstderr << "Failed to open input file\n";
         return 1;
@@ -36,13 +38,11 @@ int cmd_list(QStringList args)
 
     Saints::Packfile pf(infile);
 
-    for (const Saints::PackfileEntry& entry : pf.getEntries()) {
-        qstdout << entry.getSize();
-        if (entry.getFlags() & Saints::PackfileEntry::Compressed) {
-            qstdout << '*';
-        }
-        qstdout << " " << entry.getFilepath() << '\n';
-    }
+    qstdout << "Filename: " << filename << '\n';
+    qstdout << "Version: " << pf.getVersion() << '\n';
+    qstdout << "Number of entries: " << pf.getEntriesCount() << '\n';
+    qstdout << "Flags: " << pf.getFlags() << '\n';
+    qstdout << "Timestamp: " << pf.getTimestamp() << '\n';
 
     infile.close();
 

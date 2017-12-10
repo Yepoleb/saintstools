@@ -1,3 +1,4 @@
+#include <QtCore/QtGlobal>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QStringList>
 #include <QtCore/QFile>
@@ -10,6 +11,13 @@
 
 
 
+QString toNativePath(QString windows)
+{
+#ifndef Q_OS_WIN
+    return windows.replace("\\", "/");
+#endif
+}
+
 int cmd_extract(QStringList args)
 {
     QCommandLineParser parser;
@@ -21,7 +29,8 @@ int cmd_extract(QStringList args)
     parser.process(args);
 
     if (parser.positionalArguments().count() != 3) {
-        qstderr << parser.helpText();
+        qstderr << "Error: Too few arguments\n";
+        qstderr << parser.helpText() << '\n';
         return 1;
     }
 
@@ -34,10 +43,12 @@ int cmd_extract(QStringList args)
     Saints::Packfile pf(infile);
 
     QDir outdir(parser.positionalArguments().value(2));
-    outdir.mkpath(".");
 
     for (Saints::PackfileEntry& entry : pf.getEntries()) {
-        QFile outfile(outdir.filePath(entry.getFilename()));
+        QString native_filepath = toNativePath(entry.getFilepath());
+        outdir.mkpath(QFileInfo(native_filepath).path());
+        QString outpath(outdir.filePath(native_filepath));
+        QFile outfile(outpath);
         if (!outfile.open(QIODevice::WriteOnly)) {
             qstderr << "Failed to open output file\n";
             return 1;

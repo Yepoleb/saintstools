@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
 void MainWindow::createUi()
 {
     resize(800, 600);
-    setWindowTitle("VPP Viewer");
+    setWindowTitle("Saints Row Packfile Viewer");
 
     central_widget = new QWidget(this);
     central_layout = new QHBoxLayout(central_widget);

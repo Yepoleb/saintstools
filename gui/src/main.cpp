@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     QCoreApplication::setApplicationName("viewer");
     QCoreApplication::setApplicationVersion("0.0.1");
     QCommandLineParser parser;
-    parser.setApplicationDescription("VPP viewer");
+    parser.setApplicationDescription("Saints Row Packfile Viewer");
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("file", "The file to open.");

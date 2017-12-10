@@ -9,7 +9,7 @@
 
 
 static const QString HELP_MAIN = QStringLiteral(
-R"(SR CLI 0.0.1
+R"(SaintsPack 0.0.1
 
 Tool for working with Volition packfiles.
 
@@ -27,18 +27,15 @@ Options:
 Commands:
 
   x: Extract packfile
-  a: Add or update textures
-  l: List header fields and entries
-  d: Delete textures
-  m: Modify texture properties
-  c: Check texture for errors
-
+  l: List files
+  i: Show details
 )");
 
 using cmd_t = int (*)(QStringList);
 
 int cmd_extract(QStringList args);
 int cmd_list(QStringList args);
+int cmd_info(QStringList args);
 
 
 
@@ -56,21 +53,22 @@ int main(int argc, char** argv)
     QStringList args = app.arguments();
 
     if (args.size() < 2) {
-        qstderr << format_help(args);
+        qstderr << format_help(args) << '\n';
         return 1;
     }
     if (args[1] == "-h" || args[1] == "--help") {
-        qstdout << format_help(args);
+        qstdout << format_help(args) << '\n';
         return 0;
     }
 
     const QHash<QString, cmd_t> commands({
         {"x", cmd_extract},
-        {"l", cmd_list}
+        {"l", cmd_list},
+        {"i", cmd_info}
     });
 
     if (commands.contains(args[1])) {
-        return commands[args[1]](args.mid(1));
+        return commands[args[1]](args);
     } else {
         qstderr << QString("[Error] Unknown command \"%s\"\n").arg(args[1]);
         return 1;
