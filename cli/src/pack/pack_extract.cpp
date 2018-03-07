@@ -7,7 +7,7 @@
 
 #include "Saints/Packfile.hpp"
 
-#include "common.hpp"
+#include "../common.hpp"
 
 
 
@@ -28,17 +28,10 @@ int cmd_extract(QStringList args)
     parser.addPositionalArgument("dest", "Destination folder", "<dest>");
     parser.process(args);
 
-    if (parser.positionalArguments().count() != 3) {
-        qstderr << "Error: Too few arguments\n";
-        qstderr << parser.helpText() << '\n';
-        return 1;
-    }
+    checkPositionalArgs(parser, 3, 3);
 
     QFile infile(parser.positionalArguments().value(1));
-    if (!infile.open(QIODevice::ReadOnly)) {
-        qstderr << "Failed to open input file\n";
-        return 1;
-    }
+    safeOpen(infile, QIODevice::ReadOnly);
 
     Saints::Packfile pf(infile);
 
@@ -46,13 +39,14 @@ int cmd_extract(QStringList args)
 
     for (Saints::PackfileEntry& entry : pf.getEntries()) {
         QString native_filepath = toNativePath(entry.getFilepath());
-        outdir.mkpath(QFileInfo(native_filepath).path());
-        QString outpath(outdir.filePath(native_filepath));
-        QFile outfile(outpath);
-        if (!outfile.open(QIODevice::WriteOnly)) {
-            qstderr << "Failed to open output file\n";
+        if (!outdir.mkpath(QFileInfo(native_filepath).path())) {
+            qstderr << "Failed to create directory "
+                << QFileInfo(native_filepath).path() << '\n';
             return 1;
         }
+        QFile outfile(outdir.filePath(native_filepath));
+        safeOpen(outfile, QIODevice::WriteOnly);
+
         outfile.write(entry.getData());
         outfile.close();
     }

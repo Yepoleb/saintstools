@@ -12,6 +12,6 @@ set (SOURCES
     src/mainwindow.cpp
     src/detailswidget.cpp)
 
-add_executable(saintspackgui ${SOURCES})
+add_executable(saintspackgui WIN32 ${SOURCES})
 target_link_libraries(saintspackgui Qt5::Widgets)
 target_link_libraries(saintspackgui Upstream::saints)

@@ -5,7 +5,7 @@
 
 #include "Saints/Packfile.hpp"
 
-#include "common.hpp"
+#include "../common.hpp"
 
 
 
@@ -18,22 +18,10 @@ int cmd_list(QStringList args)
     parser.addPositionalArgument("file", "The file to open", "<file>");
     parser.process(args);
 
-    if (parser.positionalArguments().count() < 2) {
-        qstderr << "Error: Too few arguments\n";
-        qstderr << parser.helpText() << '\n';
-        return 1;
-    } else if (parser.positionalArguments().count() > 2) {
-        qstderr << "Error: Too many arguments\n";
-        qstderr << parser.helpText() << '\n';
-        return 1;
-    }
+    checkPositionalArgs(parser, 2, 2);
 
     QFile infile(parser.positionalArguments().value(1));
-    if (!infile.open(QIODevice::ReadOnly)) {
-        qstderr << "Failed to open input file\n";
-        return 1;
-    }
-
+    safeOpen(infile, QIODevice::ReadOnly);
     Saints::Packfile pf(infile);
 
     for (const Saints::PackfileEntry& entry : pf.getEntries()) {
